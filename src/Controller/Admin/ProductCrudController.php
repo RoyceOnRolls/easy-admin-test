@@ -3,7 +3,10 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Product;
+use Doctrine\DBAL\Query;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder as ORMQueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -39,7 +42,7 @@ class ProductCrudController extends AbstractCrudController
 
         return $actions
             ->add(Crud::PAGE_EDIT, $duplicate)
-            ->reorder(Crud::PAGE_EDIT, [self::ACTION_DUPLICATE, Action::SAVE_AND_RETURN ]);
+            ->reorder(Crud::PAGE_EDIT, [self::ACTION_DUPLICATE, Action::SAVE_AND_RETURN]);
     }
 
     public function configureFields(string $pageName): iterable
@@ -54,7 +57,9 @@ class ProductCrudController extends AbstractCrudController
                 ->setUploadDir(self::PRODUCTS_UPLOAD_DIR)
                 ->setSortable(false),
             BooleanField::new('active'),
-            AssociationField::new('category'),
+            AssociationField::new('category')->setQueryBuilder(function (ORMQueryBuilder $queryBuilder) {
+                $queryBuilder->where('entity.active = true');
+            }),
             DateTimeField::new('updatedAt')->hideOnForm(),
             DateTimeField::new('createdAt')->hideOnForm()
         ];
@@ -67,7 +72,15 @@ class ProductCrudController extends AbstractCrudController
         parent::persistEntity($em, $entityInstance);
     }
 
-    public function duplicateProduct(AdminContext $context, EntityManagerInterface $em, AdminUrlGenerator $adminUrlGenerator): Response {
+    public function updateEntity(EntityManagerInterface $em, $entityInstance): void
+    {
+        if (!$entityInstance instanceof Product) return;
+        $entityInstance->setUpdatedAt(new \DateTimeImmutable());
+        parent::updateEntity($em, $entityInstance);
+    }
+
+    public function duplicateProduct(AdminContext $context, EntityManagerInterface $em, AdminUrlGenerator $adminUrlGenerator): Response
+    {
         /** @var Product $product */
         $product = $context->getEntity()->getInstance();
 
@@ -79,7 +92,7 @@ class ProductCrudController extends AbstractCrudController
             ->setAction(Action::DETAIL)
             ->setEntityId($duplicateProduct->getId())
             ->generateUrl();
-        
+
         return $this->redirect($url);
     }
 }

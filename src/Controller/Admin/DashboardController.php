@@ -17,9 +17,7 @@ class DashboardController extends AbstractDashboardController
 {
     public function __construct(
         private AdminUrlGenerator $adminUrlGenerator
-    )
-    {
-        
+    ) {
     }
 
     #[Route('/admin', name: 'admin')]
@@ -31,7 +29,6 @@ class DashboardController extends AbstractDashboardController
             ->generateUrl();
 
         return $this->redirect($url);
-      
     }
 
     public function configureDashboard(): Dashboard
@@ -54,7 +51,9 @@ class DashboardController extends AbstractDashboardController
             MenuItem::linkToCrud('Show products', 'fas fa-eye', Product::class)
         ]);
 
-        yield MenuItem::subMenu('Categories', 'fas fa-bars')->setSubItems([
+        yield MenuItem::section('Categories');
+
+        yield MenuItem::subMenu('Actions', 'fas fa-bars')->setSubItems([
             MenuItem::linkToCrud('Add category', 'fas fa-plus', Category::class)->setAction(Crud::PAGE_NEW),
             MenuItem::linkToCrud('Show categories', 'fas fa-eye', Category::class)
         ]);
