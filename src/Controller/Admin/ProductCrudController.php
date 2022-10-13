@@ -65,19 +65,21 @@ class ProductCrudController extends AbstractCrudController
         ];
     }
 
-    public function persistEntity(EntityManagerInterface $em, $entityInstance): void
-    {
-        if (!$entityInstance instanceof Product) return;
-        $entityInstance->setCreatedAt(new \DateTimeImmutable());
-        parent::persistEntity($em, $entityInstance);
-    }
+    // This is now handeled by EventSubscriber
+    // public function persistEntity(EntityManagerInterface $em, $entityInstance): void
+    // {
+    //     if (!$entityInstance instanceof Product) return;
+    //     $entityInstance->setCreatedAt(new \DateTimeImmutable());
+    //     parent::persistEntity($em, $entityInstance);
+    // }
 
-    public function updateEntity(EntityManagerInterface $em, $entityInstance): void
-    {
-        if (!$entityInstance instanceof Product) return;
-        $entityInstance->setUpdatedAt(new \DateTimeImmutable());
-        parent::updateEntity($em, $entityInstance);
-    }
+    // This is now handeled by EventSubscriber
+    // public function updateEntity(EntityManagerInterface $em, $entityInstance): void
+    // {
+    //     if (!$entityInstance instanceof Product) return;
+    //     $entityInstance->setUpdatedAt(new \DateTimeImmutable());
+    //     parent::updateEntity($em, $entityInstance);
+    // }
 
     public function duplicateProduct(AdminContext $context, EntityManagerInterface $em, AdminUrlGenerator $adminUrlGenerator): Response
     {
