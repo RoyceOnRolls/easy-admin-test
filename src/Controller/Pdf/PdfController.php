@@ -27,7 +27,7 @@ class PdfController extends AbstractController
         // return $this->render('pdf/pdf.html.twig');
     }
 
-    #[Route('/test', name: 'app_pdf')]
+    #[Route('/test', name: 'app_test-pdf')]
     public function seeContent(ProductRepository $productRepository): Response
     {
         $id = 1;
@@ -37,6 +37,13 @@ class PdfController extends AbstractController
         // dd($product);
 
         $mpdf = new \Mpdf\Mpdf();
+
+        $header = $this->renderView('pdf/pdf-header.html.twig');
+        $mpdf->SetHTMLHeader($header);
+
+        $footer = $this->renderView('pdf/pdf-footer.html.twig');
+        $mpdf->SetHTMLFooter($footer);
+
 
         $html = $this->renderView('pdf/pdf.html.twig', [
             'Product' => $product,
